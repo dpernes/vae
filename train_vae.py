@@ -150,7 +150,7 @@ transform = transforms.Compose([transforms.RandomHorizontalFlip(),
                                 SetRange])
 dataset = ImgDataset(args.data_path, transform=transform)
 
-# creating data indices for training and validation splits
+# create data indices for training and validation splits
 dataset_size = len(dataset)  # number of samples in training + validation sets
 indices = list(range(dataset_size))
 split = int(np.floor(args.valid_split * dataset_size))  # samples in valid. set
@@ -188,7 +188,7 @@ print(vae)
 
 optimizer = optim.Adam(vae.parameters(),
                        lr=args.lr,
-                       weight_decay=.0)
+                       weight_decay=0.)
 
 train(vae, optimizer, train_loader, args.epochs, kl_weight=args.kl_weight,
       valid_loader=valid_loader, n_gen=args.batch_size)
