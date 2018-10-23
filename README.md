@@ -8,8 +8,8 @@ The architecture of the VAE is customisable via command line, run ``train_vae.py
 
 **Constraint:** the architecture of the decoder is the transposed of the encoder's.
 
-## Results in CelebA dataset
-The VAE with the default parameters was trained on CelebA dataset. This pre-trained model is available in the [models](https://github.com/dpernes/vae/tree/master/models) directory in this repository. The dataset is available at its [official website](http://mmlab.ie.cuhk.edu.hk/projects/CelebA.html). See some results below.
+## Results in the CelebA dataset
+The VAE with the default parameters was trained on the CelebA dataset. This pre-trained model is available in the [models](https://github.com/dpernes/vae/tree/master/models) directory in this repository. The dataset is available at its [official website](http://mmlab.ie.cuhk.edu.hk/projects/CelebA.html). See some results below.
 
 **Training images** (original vs. reconstruction)
 <div>
