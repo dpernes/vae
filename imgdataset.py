@@ -1,10 +1,7 @@
 import torch
 from torch.utils.data import Dataset
-import h5py
 import numpy as np
-from glob import glob
 import os
-from skimage import io
 from PIL import Image
 
 
