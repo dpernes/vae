@@ -1,5 +1,5 @@
 # Variational Autoencoder
-Flexible implementation in PyTorch of the Variational Autoencoder (VAE), firstly introduced in
+Flexible implementation in PyTorch of the Variational Autoencoder (VAE), firstly introduced in:
 
 Diederik P. Kingma and Max Welling "Auto-encoding variational bayes." *arXiv preprint arXiv:1312.6114* (2013). URL http://arxiv.org/abs/1312.6114.
 
