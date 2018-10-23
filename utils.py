@@ -19,7 +19,7 @@ def merge_images(images, size):
 
 
 def imsave(X, path):
-    # save the batch of images in X as a unique image in path
+    # save the batch of images in X as a single image in path
     grid_sizes = {4: (2, 2),
                   8: (2, 4),
                   16: (4, 4),
