@@ -42,7 +42,7 @@ parser.add_argument('--latent-dim', type=int, default=128,
 parser.add_argument('--batch-norm', type=int, default=1,
                     help=('whether to use or not batch normalization (default:'
                           + ' 1)'))
-parser.add_argument('--seed', type=int, default=42, metavar='S',
+parser.add_argument('--seed', type=int, default=42,
                     help='random seed (default: 42)')
 args = parser.parse_args()
 args.filters = [int(item) for item in args.filters.split(',')]
@@ -54,6 +54,7 @@ DEVICE = 'cuda:0' if torch.cuda.is_available() else 'cpu'
 
 torch.manual_seed(args.seed)
 np.random.seed(args.seed)
+
 
 def train(vae, optimizer, train_loader, n_epochs, kl_weight=1e-3,
           valid_loader=None, n_gen=0):
@@ -141,8 +142,10 @@ def train(vae, optimizer, train_loader, n_epochs, kl_weight=1e-3,
 
 SetRange = transforms.Lambda(lambda X: 2*X - 1.)
 transform = transforms.Compose([transforms.RandomHorizontalFlip(),
-                                transforms.CenterCrop((args.img_crop, args.img_crop)),
-                                transforms.Resize((args.img_resize, args.img_resize)),
+                                transforms.CenterCrop((args.img_crop,
+                                                       args.img_crop)),
+                                transforms.Resize((args.img_resize,
+                                                   args.img_resize)),
                                 transforms.ToTensor(),
                                 SetRange])
 dataset = ImgDataset(args.data_path, transform=transform)
@@ -150,7 +153,7 @@ dataset = ImgDataset(args.data_path, transform=transform)
 # creating data indices for training and validation splits
 dataset_size = len(dataset)  # number of samples in training + validation sets
 indices = list(range(dataset_size))
-split = int(np.floor(args.valid_split * dataset_size))  # no. samples in valid set
+split = int(np.floor(args.valid_split * dataset_size))  # samples in valid. set
 np.random.shuffle(indices)
 train_indices, valid_indices = indices[split:], indices[:split]
 
@@ -165,8 +168,10 @@ valid_loader = torch.utils.data.DataLoader(dataset, batch_size=args.batch_size,
                                            shuffle=False, num_workers=4,
                                            sampler=valid_sampler)
 
-print('{} samples for training'.format(int((1 - args.valid_split) * dataset_size)))
-print('{} samples for validation'.format(int(args.valid_split * dataset_size)))
+print('{} samples for training'
+      .format(int((1 - args.valid_split) * dataset_size)))
+print('{} samples for validation'
+      .format(int(args.valid_split * dataset_size)))
 
 img_channels = dataset[0].shape[0]
 
