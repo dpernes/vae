@@ -88,7 +88,7 @@ def train(vae, optimizer, train_loader, n_epochs, kl_weight=1e-3,
                 .format(kl_loss.item()))
             sys.stdout.flush()
 
-        # torch.save(vae.state_dict(), './models/vae.pth')
+        torch.save(vae.state_dict(), './models/vae.pth')
 
         # evaluation phase
         print()
