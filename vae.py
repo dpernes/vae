@@ -253,7 +253,7 @@ class VAE(nn.Module):
 
         # the decoder architecture will be the transposed of the encoder's
         filters_dec = (list(reversed(self.filters[0:n_conv-1]))
-                         + [img_channels])
+                       + [img_channels])
         kernel_sizes_dec = list(reversed(self.kernel_sizes))
         strides_dec = list(reversed(self.strides))
         paddings = list(reversed(paddings))
