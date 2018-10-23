@@ -1,7 +1,7 @@
 # Variational Autoencoder
 Implementation in PyTorch of the Variational Autoencoder (VAE), firstly introduced in
 
-Diederik P. Kingma and Max Welling "Auto-encoding variational bayes." arXiv preprint arXiv:1312.6114 (2013). URL http://arxiv.org/abs/1312.6114.
+Diederik P. Kingma and Max Welling "Auto-encoding variational bayes." *arXiv preprint arXiv:1312.6114* (2013). URL http://arxiv.org/abs/1312.6114.
 
 ## Model architecture
 The architecture of the VAE is customisable via command line, run ``train_vae.py --help`` for more details.
