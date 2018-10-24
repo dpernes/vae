@@ -4,6 +4,9 @@ from torch.nn import functional as F
 
 
 class Encoder(nn.Module):
+    '''
+    Variational Autoencoder: Encoder module.
+    '''
     def __init__(self, in_channels, in_dim, latent_dim, filters,
                  kernel_sizes, strides, paddings, flat_dim,
                  activation=nn.LeakyReLU, batch_norm=True):
@@ -43,10 +46,10 @@ class Encoder(nn.Module):
 
         # first conv. layer
         conv_layers = nn.ModuleList([nn.Conv2d(self.in_channels,
-                                    self.filters[0],
-                                    self.kernel_sizes[0],
-                                    stride=self.strides[0],
-                                    padding=self.paddings[0])])
+                                               self.filters[0],
+                                               self.kernel_sizes[0],
+                                               stride=self.strides[0],
+                                               padding=self.paddings[0])])
         if self.batch_norm:
             conv_layers.append(nn.BatchNorm2d(self.filters[0]))
         conv_layers.append(self.activation())
@@ -73,9 +76,10 @@ class Encoder(nn.Module):
         self.param_init()
 
     def param_init(self):
+        '''Parameters initialization.'''
         for layer in self.modules():
             if hasattr(layer, 'weight'):
-                if type(layer) == nn.BatchNorm2d:
+                if isinstance(layer, (nn.BatchNorm1d, nn.BatchNorm2d)):
                     nn.init.normal_(layer.weight, mean=1., std=0.02)
                 else:
                     nn.init.xavier_normal_(layer.weight)
@@ -83,6 +87,7 @@ class Encoder(nn.Module):
                 nn.init.constant_(layer.bias, 0.)
 
     def forward(self, X):
+        '''Forward pass.'''
         h = self.conv_block(X)
         h = h.reshape(-1, self.flat_dim)
         z_mean = self.mean_block(h)
@@ -92,6 +97,7 @@ class Encoder(nn.Module):
 
 
 class Decoder(nn.Module):
+    '''Variational Autoencoder: Decoder module.'''
     def __init__(self, latent_dim, in_channels, in_dim, filters,
                  kernel_sizes, strides, paddings, out_paddings,
                  activation=nn.LeakyReLU, out_activation=nn.Tanh,
@@ -147,23 +153,23 @@ class Decoder(nn.Module):
 
         # upsampling layers
         upsample_layers = nn.ModuleList([nn.ConvTranspose2d(
-                                           self.in_channels,
-                                           self.filters[0],
-                                           self.kernel_sizes[0],
-                                           stride=self.strides[0],
-                                           padding=self.paddings[0],
-                                           output_padding=out_paddings[0])])
+            self.in_channels,
+            self.filters[0],
+            self.kernel_sizes[0],
+            stride=self.strides[0],
+            padding=self.paddings[0],
+            output_padding=out_paddings[0])])
         if self.batch_norm:
-                upsample_layers.append(nn.BatchNorm2d(self.filters[0]))
+            upsample_layers.append(nn.BatchNorm2d(self.filters[0]))
         upsample_layers.append(self.activation())
         for i in range(1, n_conv):
             upsample_layers.append(nn.ConvTranspose2d(
-                                     self.filters[i-1],
-                                     self.filters[i],
-                                     self.kernel_sizes[i],
-                                     stride=self.strides[i],
-                                     padding=self.paddings[i],
-                                     output_padding=out_paddings[i]))
+                self.filters[i-1],
+                self.filters[i],
+                self.kernel_sizes[i],
+                stride=self.strides[i],
+                padding=self.paddings[i],
+                output_padding=out_paddings[i]))
 
             if i < n_conv-1:
                 if self.batch_norm:
@@ -178,9 +184,10 @@ class Decoder(nn.Module):
         self.param_init()
 
     def param_init(self):
+        '''Parameters initialization.'''
         for layer in self.modules():
             if hasattr(layer, 'weight'):
-                if type(layer) in (nn.BatchNorm1d, nn.BatchNorm2d):
+                if isinstance(layer, (nn.BatchNorm1d, nn.BatchNorm2d)):
                     nn.init.normal_(layer.weight, mean=1., std=0.02)
                 else:
                     nn.init.xavier_normal_(layer.weight)
@@ -188,6 +195,7 @@ class Decoder(nn.Module):
                 nn.init.constant_(layer.bias, 0.)
 
     def forward(self, z):
+        '''Forward pass.'''
         h = self.input_block(z)
         h = h.reshape(-1, self.in_channels, self.in_dim, self.in_dim)
         Xrec = self.upsample_block(h)
@@ -196,6 +204,9 @@ class Decoder(nn.Module):
 
 
 class VAE(nn.Module):
+    '''
+    Variational Autoencoder: encoder + sampling + decoder.
+    '''
     def __init__(self, img_channels, img_dim, latent_dim, filters,
                  kernel_sizes, strides, activation=nn.LeakyReLU,
                  out_activation=nn.Tanh, batch_norm=True):
@@ -245,7 +256,7 @@ class VAE(nn.Module):
         flat_dim = self.filters[-1] * (dims[-1]**2)
 
         self.encoder = Encoder(self.img_channels, self.img_dim,
-                               self.latent_dim,  self.filters,
+                               self.latent_dim, self.filters,
                                self.kernel_sizes, self.strides,
                                paddings, flat_dim,
                                activation=self.activation,
@@ -274,12 +285,14 @@ class VAE(nn.Module):
                                batch_norm=self.batch_norm)
 
     def sample(self, z_mean, z_logvar):
+        '''Parameters initialization.'''
         eps = torch.randn_like(z_mean)
         z = z_mean + torch.exp(.5*z_logvar) * eps
 
         return z
 
     def forward(self, X):
+        '''Forward pass.'''
         z_mean, z_logvar = self.encoder(X)
         z = self.sample(z_mean, z_logvar)
         Xrec = self.decoder(z)
@@ -288,6 +301,11 @@ class VAE(nn.Module):
 
 
 def vae_loss(Xrec, X, z_mean, z_logvar, kl_weight=1e-3):
+    '''
+    Loss function of the Variational Autoencoder.
+    Includes a hyperparameter kl_weight to control the relative weight of
+    each term in the loss.
+    '''
     reconst_ls = F.mse_loss(Xrec, X)
     kl_ls = torch.mean(-.5*torch.sum(1 + z_logvar - z_mean**2
                                      - torch.exp(z_logvar), dim=1), dim=0)
