@@ -24,7 +24,7 @@ parser.add_argument('--epochs', type=int, default=30,
                     help='number of epochs to train (default: 30)')
 parser.add_argument('--lr', type=float, default=1e-3,
                     help='learning rate (default: 1e-3)')
-parser.add_argument('--valid_split', type=float, default=.2,
+parser.add_argument('--valid-split', type=float, default=.2,
                     help='fraction of data for validation (default: 0.2)')
 parser.add_argument('--kl-weight', type=float, default=1e-3,
                     help='weight of the KL loss (default: 1e-3)')
