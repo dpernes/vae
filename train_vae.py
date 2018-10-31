@@ -31,7 +31,7 @@ parser.add_argument('--kl-weight', type=float, default=1e-3,
 parser.add_argument('--filters', type=str, default='64, 128, 256, 512',
                     help=('number of filters for each conv. layer (default: '
                           + '\'64, 128, 256, 512\')'))
-parser.add_argument('--kernel_sizes', type=str, default='3, 3, 3, 3',
+parser.add_argument('--kernel-sizes', type=str, default='3, 3, 3, 3',
                     help=('kernel sizes for each conv. layer (default: '
                           + '\'3, 3, 3, 3\')'))
 parser.add_argument('--strides', type=str, default='2, 2, 2, 2',
